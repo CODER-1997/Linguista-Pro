@@ -9,8 +9,7 @@ import 'package:linguista_ios/screens/admin/statistics/monthly_statistics/monthl
 import 'package:linguista_ios/screens/admin/statistics/statistics.dart';
 import 'package:linguista_ios/screens/admin/students/students.dart';
 import 'package:linguista_ios/screens/admin/teachers/teachers.dart';
-import 'package:upgrader/upgrader.dart';
-import '../../constants/theme.dart';
+ import '../../constants/theme.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   static RxInt currentIndex = 0.obs;
@@ -20,14 +19,7 @@ class AdminHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
           backgroundColor: homePagebg,
-          body: UpgradeAlert(
-            upgrader: Upgrader(
-                minAppVersion: '1.0.0+12',
-                appcastConfig: AppcastConfiguration(
-                  supportedOS: ['android'],
-                  url: "",
-                )),
-            child: Container(
+          body:   Container(
               height: Get.height,
               // padding: EdgeInsets.only(left: 16,right: 16,top: 16),
               child: box.read('isLogged') == 'Linguista9'  ? [
@@ -42,7 +34,7 @@ class AdminHomeScreen extends StatelessWidget {
 
               ].obs[currentIndex.value],
             ),
-          ),
+
           bottomNavigationBar:box.read('isLogged') == 'Linguista9'  ? BottomNavigationBar(
 
             backgroundColor: Colors.white,

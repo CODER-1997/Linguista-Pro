@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../constants/custom_widgets/gradient_button.dart';
 import '../../constants/text_styles.dart';
 import '../../constants/utils.dart';
 import '../../controllers/students/student_controller.dart';
  import '../admin/students/student_info.dart';
-import 'additional_funcs/add_student.dart';
 
 class Attendance extends StatelessWidget {
   final String groupId;
