@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
 
 String generateUniqueId() {
   int timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -365,27 +364,27 @@ String getCefrBand(double score) {
   }
 }
 
-PdfColor getCefrBandColor(double score) {
-  if (score < 0 || score > 75) {
-    return PdfColors.grey300;
-  }
-
-  if (score >= 0 && score <= 15) {
-    return PdfColors.red900;
-  } else if (score >= 16 && score <= 30) {
-    return PdfColors.red500;
-  } else if (score >= 31 && score <= 45) {
-    return PdfColors.orange;
-  } else if (score >= 46 && score <= 60) {
-    return PdfColors.green200;
-  } else if (score >= 61 && score <= 70) {
-    return PdfColors.green400;
-  } else if (score >= 71 && score <= 75) {
-    return PdfColors.green600;
-  } else {
-    return PdfColors.grey300;;
-  }
-}
+// PdfColor getCefrBandColor(double score) {
+//   if (score < 0 || score > 75) {
+//     return PdfColors.grey300;
+//   }
+//
+//   if (score >= 0 && score <= 15) {
+//     return PdfColors.red900;
+//   } else if (score >= 16 && score <= 30) {
+//     return PdfColors.red500;
+//   } else if (score >= 31 && score <= 45) {
+//     return PdfColors.orange;
+//   } else if (score >= 46 && score <= 60) {
+//     return PdfColors.green200;
+//   } else if (score >= 61 && score <= 70) {
+//     return PdfColors.green400;
+//   } else if (score >= 71 && score <= 75) {
+//     return PdfColors.green600;
+//   } else {
+//     return PdfColors.grey300;;
+//   }
+// }
 
 int ceftListening(int number) {
   if (number < 1 || number > 35) {

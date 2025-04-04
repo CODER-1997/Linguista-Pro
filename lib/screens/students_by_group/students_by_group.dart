@@ -152,10 +152,22 @@ class _StudentsByGroupState extends State<StudentsByGroup>
             groupId: widget.groupId,
             groupName: widget.groupName,
           ),
-          Exams(
-            group: widget.groupName,
-            groupId: widget.groupId,
-          ),
+       Scaffold(
+         body: Center(child: Padding(
+           padding:  EdgeInsets.all(Get.width/5),
+           child: Column(
+             mainAxisAlignment: MainAxisAlignment.center,
+             crossAxisAlignment: CrossAxisAlignment.center,
+             children: [
+               Lottie.asset('assets/lottie/under_dev.json'),
+               SizedBox(height: 16,),
+               Text('Coming soon ...',style: appBarStyle.copyWith(
+
+               ),)
+             ],
+           ),
+         ),),
+       )
 
         ],
       )),

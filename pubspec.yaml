@@ -47,10 +47,10 @@ dependencies:
 
   table_calendar: ^3.1.2
   font_awesome_flutter: ^10.7.0
-
-  share_plus: ^10.0.0
-  pdf: ^3.9.0
-  screenshot: ^3.0.0
+#
+#  share_plus: ^10.0.0
+#  pdf: ^3.9.0
+#  screenshot: ^3.0.0
 
 
 
