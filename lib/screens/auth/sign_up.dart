@@ -96,8 +96,19 @@ class SignUp extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                      if(secretKey.text =='maylikir'){
+                      if(secretKey.text =='maylikir' && teachersController.TeacherName.text.isNotEmpty){
                         teachersController.addNewTeacher();
+                        Get.offAll(Login());
+                        Get.snackbar(
+                          duration: Duration(seconds: 5),
+                          icon: Icon(Icons.block,color: Colors.white,),
+                          "Success",
+                          "Your account is created.",
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                        );
+
 
                       }
 
