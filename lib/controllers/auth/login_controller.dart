@@ -8,6 +8,7 @@ import '../../screens/home/home_screen.dart';
 
 class FireAuth extends GetxController {
   TextEditingController teacherId = TextEditingController();
+  TextEditingController teacherPassword = TextEditingController();
   RxBool isLoading = false.obs;
   RxList TeacherList = <DocumentSnapshot>[].obs;
   var box = GetStorage();

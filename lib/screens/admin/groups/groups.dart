@@ -72,7 +72,7 @@ class _AdminGroupsState extends State<AdminGroups> {
             padding: const EdgeInsets.only(
               right: 16,
             ),
-            child: InkWell(
+            child:  box.read('isLogged') == 'testuser' ? SizedBox():InkWell(
               onTap: () {
                 showDialog(
                   context: context,
@@ -193,10 +193,26 @@ class _AdminGroupsState extends State<AdminGroups> {
                         child: InkWell(
 
                           onTap: () {
-                            Get.to(StudentsByGroup(
-                              groupId: document['items']['uniqueId'],
-                              groupName: document['items']['name'],
-                            ));
+                            if(box.read('isLogged') == 'testuser'){
+                              print('eqqqqqqqqqqqqqqqqqeee');
+                              Get.snackbar(
+                                duration: Duration(seconds: 5),
+                                icon: Icon(Icons.block,color: Colors.white,),
+                                "Error",
+                                "Test account is not allowed.",
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                              );
+
+                            }
+                            else {
+                              Get.to(StudentsByGroup(
+                                groupId: document['items']['uniqueId'],
+                                groupName: document['items']['name'],
+                              ));
+                            }
+
                           },
                           child: Container(
                             width: Get.width,
@@ -244,7 +260,7 @@ class _AdminGroupsState extends State<AdminGroups> {
                                     )
                                   ],
                                 ),
-                                Row(
+                                box.read('isLogged') == 'testuser'?SizedBox():  Row(
                                   children: [
                                     InkWell(
                                       onTap: () {

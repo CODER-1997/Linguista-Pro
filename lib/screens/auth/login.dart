@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:lottie/lottie.dart';
+import 'package:linguista_ios/constants/text_styles.dart';
+import 'package:linguista_ios/screens/auth/sign_up.dart';
 
 import '../../controllers/auth/login_controller.dart';
 import '../admin/admin_home_screen.dart';
-import '../home/home_screen.dart';
 
 class Login extends StatelessWidget {
   Rx isLogin = true.obs;
@@ -48,7 +48,25 @@ class Login extends StatelessWidget {
               controller: auth.teacherId,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelText: 'Enter your teacher id :',
+                labelText: 'Login:',
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 32,
+            ),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              controller: auth.teacherPassword,
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'Password:',
                 labelStyle: TextStyle(color: Colors.white),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
@@ -63,12 +81,16 @@ class Login extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                if(auth.teacherId.text == 'Linguista9' ){
+                if(auth.teacherId.text == 'Linguista9' && auth.teacherPassword.text =='6463070' ){
                   box.write('isLogged', auth.teacherId.text);
                   Get.offAll(AdminHomeScreen());
                 }
-                else {
-                  auth.signIn(auth.teacherId.text);
+                else  if (auth.teacherId.text == 'Teacher'){
+                  auth.signIn(auth.teacherPassword.text);
+                }
+                else  if (auth.teacherId.text == 'test' && auth.teacherPassword.text =='123'){
+                  box.write('isLogged', 'testuser');
+                  Get.offAll(AdminHomeScreen());
                 }
               },
               child: Text('login'.tr.capitalizeFirst!),
@@ -76,6 +98,18 @@ class Login extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 15.0),
               ),
             ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+              TextButton(onPressed: (){
+                Get.offAll(SignUp());
+
+              }, child: Text('No account ? Sign up',style: appBarStyle.copyWith(
+                color: Colors.white,
+                fontSize: 14
+              ),))
+            ],)
           ],
         ),
       ),

@@ -297,27 +297,17 @@ class _TeachersState extends State<Teachers> {
                                     children: [
                                       Row(
                                         children: [
-                                          CircleAvatar(
-                                              radius: 24,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    111),
-                                                child: Image.asset(
-                                                    'assets/teacher_avatar.png'),
-                                              )),
-                                          SizedBox(
-                                            width: 16,
-                                          ),
+
                                           Text(
                                             teachers[i]['items']['name']
                                                 .toString(),
                                             style: TextStyle(
                                                 color: Colors.black,
-                                                fontSize: 14),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12),
                                           ),
                                           SizedBox(
-                                            width: 16,
+                                            width: 4,
                                           ),
                                           Text(
                                             teachers[i]['items']
@@ -325,7 +315,9 @@ class _TeachersState extends State<Teachers> {
                                                 .toString(),
                                             style: TextStyle(
                                                 color: Colors.black,
-                                                fontSize: 14),
+                                                fontWeight: FontWeight.bold,
+
+                                                fontSize: 12),
                                           )
                                         ],
                                       ),
