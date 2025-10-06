@@ -96,7 +96,7 @@ class SignUp extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                      if(secretKey.text =='maylikir' && teachersController.TeacherName.text.isNotEmpty){
+                      if(secretKey.text =='maylikir' && teachersController.TeacherName.text.isNotEmpty && teachersController.TeacherSurname.text.isNotEmpty){
                         teachersController.addNewTeacher();
                         Get.offAll(Login());
                         Get.snackbar(
