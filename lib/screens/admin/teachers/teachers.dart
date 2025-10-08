@@ -254,7 +254,7 @@ class _TeachersState extends State<Teachers> {
                 SizedBox(height: 8,),
                 StreamBuilder(
                     stream:   FirebaseFirestore.instance
-                        .collection('LinguistaTeachers').where('items.isDeleted',isEqualTo: null)
+                        .collection('LinguistaTeachers').where('items.isDeleted',isEqualTo: false)
                         .snapshots() ,
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {

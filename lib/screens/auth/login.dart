@@ -62,7 +62,7 @@ class Login extends StatelessWidget {
               height: 32,
             ),
             TextFormField(
-              keyboardType: TextInputType.phone,
+
               controller: auth.teacherPassword,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
