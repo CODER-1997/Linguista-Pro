@@ -71,7 +71,7 @@ class SignUp extends StatelessWidget {
                 teachersController.TeacherSurname,
                 keyboardType: TextInputType.text,
                 decoration: buildInputDecoratione(
-                    'Teacher surname'),
+                    'Login'),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "Maydonlar bo'sh bo'lmasligi kerak";
@@ -83,15 +83,9 @@ class SignUp extends StatelessWidget {
             ),
             TextFormField(
                 controller:secretKey ,
-                keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  MaskTextInputFormatter(
-                      mask: '+998 ## ### ## ##',
-                      filter: {"#": RegExp(r'[0-9]')},
-                      type: MaskAutoCompletionType.lazy)
-                ],
+
                 decoration: buildInputDecoratione(
-                    'Phone number'),
+                    'Password'),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "Maydonlar bo'sh bo'lmasligi kerak";
@@ -104,12 +98,14 @@ class SignUp extends StatelessWidget {
             // test,,,,,,ssss
             ElevatedButton(
               onPressed: () {
-                      if(secretKey.text.toString().isNotEmpty && teachersController.TeacherName.text.isNotEmpty && teachersController.TeacherSurname.text.isNotEmpty){
+                      if(secretKey.text.toString().isNotEmpty
+                          && teachersController.TeacherName.text.isNotEmpty
+                          && teachersController.TeacherSurname.text.isNotEmpty){
                         teachersController.signUpAsTeacher(secretKey.text);
                         Get.offAll(Login());
                         Get.snackbar(
                           duration: Duration(seconds: 5),
-                          icon: Icon(Icons.block,color: Colors.white,),
+                          icon: Icon(Icons.check_circle_rounded,color: Colors.white,),
                           "Success",
                           "Your account is created.",
                           snackPosition: SnackPosition.TOP,
@@ -118,6 +114,17 @@ class SignUp extends StatelessWidget {
                         );
 
 
+                      }
+                      else {
+                        Get.snackbar(
+                          duration: Duration(seconds: 5),
+                          icon: Icon(Icons.block,color: Colors.white,),
+                          "Error",
+                          "All fields should be filled",
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
                       }
 
 

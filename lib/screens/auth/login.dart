@@ -85,12 +85,15 @@ class Login extends StatelessWidget {
                   box.write('isLogged', auth.teacherId.text);
                   Get.offAll(AdminHomeScreen());
                 }
-                else  if (auth.teacherId.text == 'Teacher' || auth.teacherPassword.text.startsWith('+998')){
+                else  if (auth.teacherId.text == 'Teacher'  ){
                   auth.signIn(auth.teacherPassword.text);
                 }
                 else  if (auth.teacherId.text == 'test' && auth.teacherPassword.text =='123'){
                   box.write('isLogged', 'testuser');
                   Get.offAll(AdminHomeScreen());
+                }
+                else  {
+                  auth.signIn(auth.teacherPassword.text);
                 }
               },
               child: Text('login'.tr.capitalizeFirst!),

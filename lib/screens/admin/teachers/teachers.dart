@@ -254,7 +254,7 @@ class _TeachersState extends State<Teachers> {
                 SizedBox(height: 8,),
                 StreamBuilder(
                     stream:   FirebaseFirestore.instance
-                        .collection('LinguistaTeachers')
+                        .collection('LinguistaTeachers').where('items.isDeleted',isEqualTo: null)
                         .snapshots() ,
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -264,14 +264,9 @@ class _TeachersState extends State<Teachers> {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       }
                       if (snapshot.hasData) {
-                        var teachers =[];
+                        var teachers =snapshot.data!.docs;
 
-                             for(var item in snapshot.data!.docs ){
-                               if(item['items']['uniqueId'].toString().contains('+998')==false){
-                                 teachers.add(item);
-                               }
-                             }
-
+                            
 
 
 

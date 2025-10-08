@@ -71,7 +71,7 @@ class TeachersController extends GetxController {
         isBanned: false,
         groupIds: teacherGroupIds.value
         ,
-        groups: teacherGroups.value,
+        groups: teacherGroups.value, isDeleted: false,
       );
       // Create a new document with an empty list
       await _dataCollection.add({
@@ -105,8 +105,10 @@ class TeachersController extends GetxController {
       TeacherModel newData = TeacherModel(
         name: TeacherName.text,
         surname: TeacherSurname.text,
-        uniqueId: uniqueId.removeAllWhitespace,
+        uniqueId:  uniqueId.removeAllWhitespace,
         isBanned: false,
+        isDeleted: true,
+        
         groupIds: []
         ,
         groups: [],

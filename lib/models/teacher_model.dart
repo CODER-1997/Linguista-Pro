@@ -3,6 +3,7 @@ class TeacherModel {
   final String surname;
   final String uniqueId;
   final bool isBanned;
+  final bool isDeleted;
   final List groupIds;
   final List groups;
 
@@ -12,6 +13,7 @@ class TeacherModel {
     required this.surname,
     required this.uniqueId,
     required this.isBanned,
+    required this.isDeleted,
     required this.groupIds,
     required this.groups,
   });
@@ -25,6 +27,7 @@ class TeacherModel {
       'isBanned': isBanned,
       'groupIds': groupIds,
       'groups': groups,
+      'isDeleted': isDeleted,
     };
   }
 }
