@@ -208,11 +208,15 @@ class _GroupsState extends State<Groups> {
                                                 SizedBox(
                                                   width: 16,
                                                 ),
-                                                Text(
-                                                  data['items']['groups'][i]['group_name'],
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 16),
+                                                Container(
+                                                  width: Get.width/2,
+                                                  child: Text(
+                                                    data['items']['groups'][i]['group_name'],
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
                                                 )
                                               ],
                                             ),

@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
  import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:linguista_ios/constants/custom_widgets/group_shimmer.dart';
 import 'package:linguista_ios/controllers/auth/login_controller.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../constants/custom_widgets/FormFieldDecorator.dart';
@@ -144,8 +146,8 @@ class _AdminGroupsState extends State<AdminGroups> {
                   style: TextStyle(color: Colors.white),
                 ),
                 decoration: BoxDecoration(
-                    color: Color(0xffff5f91),
-                    borderRadius: BorderRadius.circular(12)),
+                  border: Border.all(color: Colors.white),
+                     borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -168,7 +170,7 @@ class _AdminGroupsState extends State<AdminGroups> {
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return GroupListShimmer();
               }
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -185,438 +187,235 @@ class _AdminGroupsState extends State<AdminGroups> {
                   onReorder: (oldIndex, newIndex) => _updateOrder(documents, oldIndex, newIndex),
                   children: [
                     for (final document in documents)
+                      Slidable(
+                        key: ValueKey(document.id),
+                        endActionPane: box.read('isLogged') == 'testuser'
+                            ? null
+                            : ActionPane(
+                          motion: const DrawerMotion(),
+                          extentRatio: 0.45, // width of actions
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                // Edit dialog
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    groupController.setValues(document['items']['name']);
+                                    return Dialog(
+                                      backgroundColor: Colors.white,
+                                      insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12.0),
+                                      ),
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(16),
+                                          height: Get.height / 3,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  const Text("Edit Group"),
+                                                  const SizedBox(height: 16),
+                                                  TextFormField(
+                                                    controller: groupController.GroupEdit,
+                                                    decoration:
+                                                    buildInputDecoratione('Group name'),
+                                                    validator: (value) {
+                                                      if (value!.isEmpty) {
+                                                        return "Field cannot be empty";
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  if (_formKey.currentState!.validate()) {
+                                                    groupController
+                                                        .editGroup(document.id.toString());
+                                                  }
+                                                },
+                                                child: Obx(() => CustomButton(
+                                                  isLoading:
+                                                  groupController.isLoading.value,
+                                                  text: "Edit",
+                                                )),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Edit',
+                            ),
+                            SlidableAction(
+                              onPressed: (context) {
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      backgroundColor: Colors.white,
+                                      insetPadding: EdgeInsets.symmetric(horizontal: 16),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12.0)),
+
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(vertical: 12,horizontal: 12),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12)),
+                                        width: Get.width,
+                                        height: Get.height/4 ,
+                                        child:Container(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+
+                                            children: [
+                                              Text("Delete Group",
+                                                style: TextStyle(
+                                                    color: CupertinoColors.black,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold
+
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              SizedBox(height: 32,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: [
+
+                                                  ElevatedButton(
+
+                                                      onPressed: (){
+                                                        groupController.deleteGroup(document.id);
 
 
-                      Container(
-                        key:  ValueKey(document.id),
+                                                        Navigator.pop(context);
 
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.greenAccent,
+                                                        foregroundColor: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(32),
+                                                        ),
+                                                        padding:   EdgeInsets.symmetric(horizontal: Get.width/7, vertical: 14),
+                                                        elevation: 5,
+                                                      ),
+
+                                                      child: Text('Yes')),
+                                                  ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.red,
+                                                        foregroundColor: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(32),
+                                                        ),
+                                                        padding:   EdgeInsets.symmetric(horizontal: Get.width/7, vertical: 14),
+                                                        elevation: 5,
+                                                      ),
+
+                                                      onPressed: (){
+                                                        Navigator.pop(context);
+                                                      }, child: Text("No")),
+
+
+
+                                                ],)
+                                            ],),
+
+
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+
+
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                            ),
+                          ],
+                        ),
                         child: InkWell(
-
                           onTap: () {
-                            if(box.read('isLogged') == 'testuser'){
-                              print('eqqqqqqqqqqqqqqqqqeee');
+                            if (box.read('isLogged') == 'testuser') {
                               Get.snackbar(
-                                duration: Duration(seconds: 5),
-                                icon: Icon(Icons.block,color: Colors.white,),
                                 "Error",
                                 "Test account is not allowed.",
-                                snackPosition: SnackPosition.TOP,
                                 backgroundColor: Colors.red,
                                 colorText: Colors.white,
+                                icon: const Icon(Icons.block, color: Colors.white),
                               );
-
-                            }
-                            else {
+                            } else {
                               Get.to(StudentsByGroup(
                                 groupId: document['items']['uniqueId'],
                                 groupName: document['items']['name'],
                               ));
                             }
-
                           },
                           child: Container(
                             width: Get.width,
-                            padding: EdgeInsets.all(12),
-                            margin: EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(20),
+                            margin: const EdgeInsets.symmetric(vertical: 1),
                             decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(8),
-                                color: CupertinoColors.white),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                        backgroundColor:
-                                        Colors.teal,
-                                        radius: 16,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                          BorderRadius.circular(
-                                              111),
-                                          child: Text(
-                                            "${ document['items']['order']+1}",
-                                            style: TextStyle(
-                                                color: Colors.white),
-                                          ),
-                                        )),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    Container(
-                                      width: Get.width/1.8,
+                                      backgroundColor: Colors.teal,
+                                      radius: 16,
                                       child: Text(
-                                        document['items']['name']
-                                            .toString(),
-                                        style: TextStyle(
+                                        "${document['items']['order'] + 1}",
+                                        style: const TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    SizedBox(
+                                      width: Get.width / 1.8,
+                                      child: Text(
+                                        document['items']['name'],
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           color: Colors.black,
                                           fontSize: 12,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
-                                box.read('isLogged') == 'testuser'?SizedBox():  Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        showDialog(
-                                          context: context,
-                                          builder:
-                                              (BuildContext context) {
-                                            groupController.setValues(
-                                              document['items']
-                                              ['name'],
-                                            );
-
-                                            return Dialog(
-                                              backgroundColor:
-                                              Colors.white,
-                                              insetPadding: EdgeInsets
-                                                  .symmetric(
-                                                  horizontal: 16),
-
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                  BorderRadius
-                                                      .circular(
-                                                      12.0)),
-                                              //this right here
-                                              child: Form(
-                                                key: _formKey,
-                                                child: Container(
-                                                  padding:
-                                                  EdgeInsets.all(
-                                                      16),
-                                                  decoration: BoxDecoration(
-                                                      color: Colors
-                                                          .white,
-                                                      borderRadius:
-                                                      BorderRadius
-                                                          .circular(
-                                                          12)),
-                                                  width: Get.width,
-                                                  height:
-                                                  Get.height / 3,
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                    children: [
-                                                      Column(
-                                                        children: [
-                                                          Text(
-                                                              "Tahrirlash"),
-                                                          SizedBox(
-                                                            height:
-                                                            16,
-                                                          ),
-                                                          SizedBox(
-                                                            child: TextFormField(
-                                                                decoration: buildInputDecoratione(''),
-                                                                controller: groupController.GroupEdit,
-                                                                keyboardType: TextInputType.text,
-                                                                validator: (value) {
-                                                                  if (value!.isEmpty) {
-                                                                    return "Maydonlar bo'sh bo'lmasligi kerak";
-                                                                  }
-                                                                  return null;
-                                                                }),
-                                                          ),
-                                                          SizedBox(
-                                                            height:
-                                                            16,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      InkWell(
-                                                        onTap: () {
-                                                          if (_formKey
-                                                              .currentState!
-                                                              .validate()) {
-                                                            groupController.editGroup(document
-                                                                .id
-                                                                .toString());
-                                                          }
-                                                        },
-                                                        child: Obx(() => CustomButton(
-                                                            isLoading: groupController
-                                                                .isLoading
-                                                                .value,
-                                                            text:
-                                                            "Edit")),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Icon(Icons.edit),
-                                    ),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    IconButton(
-                                        padding: EdgeInsets.zero,
-                                        onPressed: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext
-                                            context) {
-                                              return CustomAlertDialog(
-                                                title: "Delete Group",
-                                                description:
-                                                "Are you sure you want to delete this group ?",
-                                                onConfirm: () async {
-                                                  // Perform delete action here
-                                                  groupController
-                                                      .deleteGroup(
-                                                      document
-                                                          .id);
-                                                },
-                                                img:
-                                                'assets/delete.png',
-                                              );
-                                            },
-                                          );
-                                        },
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                        ))
-                                  ],
-                                )
                               ],
                             ),
                           ),
                         ),
-                      )
+                      ),
+
 
                   ],
                 );
-                // return groups.length != 0
-                //     ? Wrap(
-                //         alignment: WrapAlignment.start,
-                //         spacing: 8,
-                //         direction: Axis.horizontal,
-                //         children: [
-                //           for (int i = 0; i < groups.length; i++)
-                //             InkWell(
-                //               onTap: () {
-                //                 Get.to(StudentsByGroup(
-                //                   groupId: groups[i]['items']['uniqueId'],
-                //                   groupName: groups[i]['items']['name'],
-                //                 ));
-                //               },
-                //               child: Container(
-                //                 width: Get.width,
-                //                 padding: EdgeInsets.all(12),
-                //                 margin: EdgeInsets.all(2),
-                //                 decoration: BoxDecoration(
-                //                     borderRadius:
-                //                         BorderRadius.circular(8),
-                //                     color: CupertinoColors.white),
-                //                 child: Row(
-                //                   mainAxisAlignment:
-                //                       MainAxisAlignment.spaceBetween,
-                //                   children: [
-                //                     Row(
-                //                       children: [
-                //                         CircleAvatar(
-                //                             backgroundColor:
-                //                                 Colors.teal,
-                //                             radius: 16,
-                //                             child: ClipRRect(
-                //                               borderRadius:
-                //                                   BorderRadius.circular(
-                //                                       111),
-                //                               child: Text(
-                //                                 "${ groups[i]['items']['order']}",
-                //                                 style: TextStyle(
-                //                                     color: Colors.white),
-                //                               ),
-                //                             )),
-                //                         SizedBox(
-                //                           width: 8,
-                //                         ),
-                //                         Text(
-                //                           groups[i]['items']['name']
-                //                               .toString(),
-                //                           style: TextStyle(
-                //                             fontWeight: FontWeight.w700,
-                //                             color: Colors.black,
-                //                             fontSize: 14,
-                //                           ),
-                //                         )
-                //                       ],
-                //                     ),
-                //                     Row(
-                //                       children: [
-                //                         InkWell(
-                //                           onTap: () {
-                //                             showDialog(
-                //                               context: context,
-                //                               builder:
-                //                                   (BuildContext context) {
-                //                                 groupController.setValues(
-                //                                   groups[i]['items']
-                //                                       ['name'],
-                //                                 );
-                //
-                //                                 return Dialog(
-                //                                   backgroundColor:
-                //                                       Colors.white,
-                //                                   insetPadding: EdgeInsets
-                //                                       .symmetric(
-                //                                           horizontal: 16),
-                //
-                //                                   shape: RoundedRectangleBorder(
-                //                                       borderRadius:
-                //                                           BorderRadius
-                //                                               .circular(
-                //                                                   12.0)),
-                //                                   //this right here
-                //                                   child: Form(
-                //                                     key: _formKey,
-                //                                     child: Container(
-                //                                       padding:
-                //                                           EdgeInsets.all(
-                //                                               16),
-                //                                       decoration: BoxDecoration(
-                //                                           color: Colors
-                //                                               .white,
-                //                                           borderRadius:
-                //                                               BorderRadius
-                //                                                   .circular(
-                //                                                       12)),
-                //                                       width: Get.width,
-                //                                       height:
-                //                                           Get.height / 3,
-                //                                       child: Column(
-                //                                         mainAxisAlignment:
-                //                                             MainAxisAlignment
-                //                                                 .spaceBetween,
-                //                                         children: [
-                //                                           Column(
-                //                                             children: [
-                //                                               Text(
-                //                                                   "Tahrirlash"),
-                //                                               SizedBox(
-                //                                                 height:
-                //                                                     16,
-                //                                               ),
-                //                                               SizedBox(
-                //                                                 child: TextFormField(
-                //                                                     decoration: buildInputDecoratione(''),
-                //                                                     controller: groupController.GroupEdit,
-                //                                                     keyboardType: TextInputType.text,
-                //                                                     validator: (value) {
-                //                                                       if (value!.isEmpty) {
-                //                                                         return "Maydonlar bo'sh bo'lmasligi kerak";
-                //                                                       }
-                //                                                       return null;
-                //                                                     }),
-                //                                               ),
-                //                                               SizedBox(
-                //                                                 height:
-                //                                                     16,
-                //                                               ),
-                //                                             ],
-                //                                           ),
-                //                                           InkWell(
-                //                                             onTap: () {
-                //                                               if (_formKey
-                //                                                   .currentState!
-                //                                                   .validate()) {
-                //                                                 groupController.editGroup(groups[
-                //                                                         i]
-                //                                                     .id
-                //                                                     .toString());
-                //                                               }
-                //                                             },
-                //                                             child: Obx(() => CustomButton(
-                //                                                 isLoading: groupController
-                //                                                     .isLoading
-                //                                                     .value,
-                //                                                 text:
-                //                                                     "Edit")),
-                //                                           )
-                //                                         ],
-                //                                       ),
-                //                                     ),
-                //                                   ),
-                //                                 );
-                //                               },
-                //                             );
-                //                           },
-                //                           child: Icon(Icons.edit),
-                //                         ),
-                //                         SizedBox(
-                //                           width: 8,
-                //                         ),
-                //                         IconButton(
-                //                             padding: EdgeInsets.zero,
-                //                             onPressed: () {
-                //                               showDialog(
-                //                                 context: context,
-                //                                 builder: (BuildContext
-                //                                     context) {
-                //                                   return CustomAlertDialog(
-                //                                     title: "Delete Group",
-                //                                     description:
-                //                                         "Are you sure you want to delete this group ?",
-                //                                     onConfirm: () async {
-                //                                       // Perform delete action here
-                //                                       groupController
-                //                                           .deleteGroup(
-                //                                               groups[i]
-                //                                                   .id);
-                //                                     },
-                //                                     img:
-                //                                         'assets/delete.png',
-                //                                   );
-                //                                 },
-                //                               );
-                //                             },
-                //                             icon: Icon(
-                //                               Icons.delete,
-                //                               color: Colors.red,
-                //                             ))
-                //                       ],
-                //                     )
-                //                   ],
-                //                 ),
-                //               ),
-                //             )
-                //         ],
-                //       )
-                //     : Center(
-                //         child: Column(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           crossAxisAlignment: CrossAxisAlignment.center,
-                //           children: [
-                //             Image.asset(
-                //               'assets/empty.png',
-                //               width: 222,
-                //             ),
-                //             Text(
-                //               'Our center has not any groups ',
-                //               style: TextStyle(
-                //                   color: Colors.black, fontSize: 33),
-                //             ),
-                //             SizedBox(
-                //               height: 16,
-                //             ),
-                //           ],
-                //         ),
-                //       );
+
               }
               // If no data available
 

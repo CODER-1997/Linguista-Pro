@@ -26,7 +26,7 @@ class AdminHomeScreen extends StatelessWidget {
                 AdminGroups(),
                 AdminStudents(),
                 Teachers(),
-                MonthlyStatistics(),
+              //  MonthlyStatistics(),
                 Statistics(),
               ].obs[currentIndex.value]: [
                 AdminGroups(),
@@ -46,26 +46,39 @@ class AdminHomeScreen extends StatelessWidget {
             },
             items: [
               BottomNavigationBarItem(
-                icon: FaIcon(size: 18, FontAwesomeIcons.rocket),
+                icon: Image.asset(
+                  'assets/icons/ic_main.png',
+                  width: 24,
+                  height: 24,
+                ),
                 label: 'Groups'.tr.capitalizeFirst,
               ),
 
               BottomNavigationBarItem(
-                icon: FaIcon(size: 18, FontAwesomeIcons.peopleGroup),
+                icon:Image.asset(
+                  'assets/icons/ic_students.png',
+                  width: 24,
+                  height: 24,
+                ),
                 label: 'Students'.tr.capitalizeFirst,
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(size: 18, FontAwesomeIcons.chalkboardUser),
+                icon:Image.asset(
+                  'assets/icons/ic_student.png',
+                  width: 24,
+                  height: 24,
+                ),
                 label: 'Teachers'.tr.capitalizeFirst,
               ),
+              // BottomNavigationBarItem(
+              //   icon: FaIcon(size: 18, FontAwesomeIcons.triangleExclamation),
+              //   label: 'Debtors'.tr.capitalizeFirst,
+              // ),
               BottomNavigationBarItem(
-                icon: FaIcon(size: 18, FontAwesomeIcons.triangleExclamation),
-                label: 'Debtors'.tr.capitalizeFirst,
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(
-                  size: 18,
-                  FontAwesomeIcons.chartPie,
+                icon: Image.asset(
+                  'assets/icons/ic_statistics.png',
+                  width: 24,
+                  height: 24,
                 ),
                 label: 'Statistics'.tr.capitalizeFirst,
               ),

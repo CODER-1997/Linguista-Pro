@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:linguista_ios/constants/custom_widgets/student_shimemr.dart';
 import '../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../constants/custom_widgets/gradient_button.dart';
 import '../../constants/text_styles.dart';
@@ -44,30 +45,8 @@ class Attendance extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Container(
-            //   width: Get.width-32,
-            //   padding: const EdgeInsets.symmetric(horizontal: 32,vertical: 8),
-            //   decoration: BoxDecoration(
-            //     color: Colors.white,
-            //     borderRadius: BorderRadius.circular(4)
-            //   ),
-            //   child: Text(widget.lessonType.capitalizeFirst! + " Lesson",style: appBarStyle,),
-            // ),
-            // Form(
-            //   key: _formKey,
-            //   child: TextField(
-            //     decoration: InputDecoration(
-            //       labelText: 'Search Items',
-            //       border: OutlineInputBorder(),
-            //     ),
-            //     onChanged: (value) {
-            //       setState(() {
-            //         _searchText = value.toLowerCase();
-            //       });
-            //     },
-            //   ),
-            // ),
-            // SizedBox(height: 20),
+
+
             StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('LinguistaStudents')
@@ -76,7 +55,10 @@ class Attendance extends StatelessWidget {
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Container(
+                      height: Get.height,
+                      child: StudentCardShimmer(),
+                    );
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));

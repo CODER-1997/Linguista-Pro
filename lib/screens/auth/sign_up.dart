@@ -1,152 +1,157 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:linguista_ios/constants/text_styles.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
 import '../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../controllers/admin/teachers_controller.dart';
 import '../../controllers/auth/login_controller.dart';
-import '../admin/admin_home_screen.dart';
 import 'login.dart';
 
 class SignUp extends StatelessWidget {
-  Rx isLogin = true.obs;
-  Rx isVisible = false.obs;
+  final TeachersController teachersController = Get.put(TeachersController());
+  final FireAuth auth = Get.put(FireAuth());
+  final GetStorage box = GetStorage();
 
-  FireAuth auth = Get.put(FireAuth());
-  GetStorage box = GetStorage();
-  TeachersController teachersController = Get.put(TeachersController());
-  TextEditingController secretKey = TextEditingController();
+  final TextEditingController secretKey = TextEditingController();
+  final RxBool isVisible = false.obs;
 
-
-
+  SignUp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xff012931), Color(0xff012931)],
+      backgroundColor: const Color(0xff012931),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(Icons.person_add_alt_1_rounded,
+                  color: Colors.white, size: 80),
+              const SizedBox(height: 16),
+              const Text(
+                'Create Teacher Account',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+
+              // Name
+              TextFormField(
+                controller: teachersController.TeacherName,
+                textInputAction: TextInputAction.next,
+                style: const TextStyle(color: Colors.white),
+                decoration: buildInputDecoratione('Full Name').copyWith(
+                  prefixIcon: const Icon(Icons.person_outline,
+                      color: Colors.black),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Username
+              TextFormField(
+                controller: teachersController.TeacherSurname,
+                textInputAction: TextInputAction.next,
+                style: const TextStyle(color: Colors.white),
+                decoration: buildInputDecoratione('Login').copyWith(
+                  prefixIcon:
+                  const Icon(Icons.account_circle, color: Colors.black),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Password
+              Obx(() => TextFormField(
+                controller: secretKey,
+                obscureText: !isVisible.value,
+                style: const TextStyle(color: Colors.white),
+                decoration: buildInputDecoratione('Password').copyWith(
+                  prefixIcon: const Icon(Icons.lock_outline,
+                      color: Colors.black),
+                  suffixIcon: IconButton(
+                    onPressed: () =>
+                    isVisible.value = !isVisible.value,
+                    icon: Icon(
+                      isVisible.value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+              )),
+              const SizedBox(height: 32),
+
+              // Sign Up Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orangeAccent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                onPressed: () {
+                  if (teachersController.TeacherName.text.isEmpty ||
+                      teachersController.TeacherSurname.text.isEmpty ||
+                      secretKey.text.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'All fields should be filled',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                      icon: const Icon(Icons.block, color: Colors.white),
+                      snackPosition: SnackPosition.TOP,
+                      duration: const Duration(seconds: 3),
+                    );
+                    return;
+                  }
+
+                  teachersController.signUpAsTeacher(secretKey.text);
+                  Get.offAll(() => Login());
+                  Get.snackbar(
+                    'Success',
+                    'Your account has been created successfully.',
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                    icon:
+                    const Icon(Icons.check_circle_rounded, color: Colors.white),
+                    snackPosition: SnackPosition.TOP,
+                    duration: const Duration(seconds: 3),
+                  );
+                },
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Login Redirect
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Already have an account? ",
+                      style: TextStyle(color: Colors.white70, fontSize: 14)),
+                  TextButton(
+                    onPressed: () => Get.offAll(() => Login()),
+                    child: const Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.orangeAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-
-            Text(
-              'Sign up',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36.0,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20.0),
-            TextFormField(
-                controller:
-                teachersController.TeacherName,
-                keyboardType: TextInputType.text,
-                decoration: buildInputDecoratione(
-                    'Teacher name'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Maydonlar bo'sh bo'lmasligi kerak";
-                  }
-                  return null;
-                }),
-            SizedBox(
-              height: 16,
-            ),
-            TextFormField(
-                controller:
-                teachersController.TeacherSurname,
-                keyboardType: TextInputType.text,
-                decoration: buildInputDecoratione(
-                    'Login'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Maydonlar bo'sh bo'lmasligi kerak";
-                  }
-                  return null;
-                }),
-            SizedBox(
-              height: 16,
-            ),
-            TextFormField(
-                controller:secretKey ,
-
-                decoration: buildInputDecoratione(
-                    'Password'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Maydonlar bo'sh bo'lmasligi kerak";
-                  }
-                  return null;
-                }),
-            SizedBox(
-              height: 32,
-            ),
-            // test,,,,,,ssss
-            ElevatedButton(
-              onPressed: () {
-                      if(secretKey.text.toString().isNotEmpty
-                          && teachersController.TeacherName.text.isNotEmpty
-                          && teachersController.TeacherSurname.text.isNotEmpty){
-                        teachersController.signUpAsTeacher(secretKey.text);
-                        Get.offAll(Login());
-                        Get.snackbar(
-                          duration: Duration(seconds: 5),
-                          icon: Icon(Icons.check_circle_rounded,color: Colors.white,),
-                          "Success",
-                          "Your account is created.",
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.green,
-                          colorText: Colors.white,
-                        );
-
-
-                      }
-                      else {
-                        Get.snackbar(
-                          duration: Duration(seconds: 5),
-                          icon: Icon(Icons.block,color: Colors.white,),
-                          "Error",
-                          "All fields should be filled",
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: Colors.red,
-                          colorText: Colors.white,
-                        );
-                      }
-
-
-              },
-              child: Text('Sign Up'.tr.capitalizeFirst!),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-              ),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-              TextButton(onPressed: (){
-                Get.offAll(Login());
-
-              }, child: Text('Have an account ? Login',style: appBarStyle.copyWith(
-                color: Colors.white,
-                fontSize: 14
-              ),))
-            ],)
-          ],
         ),
       ),
     );

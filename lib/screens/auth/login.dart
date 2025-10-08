@@ -1,119 +1,168 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:linguista_ios/constants/text_styles.dart';
-import 'package:linguista_ios/screens/auth/sign_up.dart';
-
 import '../../controllers/auth/login_controller.dart';
 import '../admin/admin_home_screen.dart';
+import 'sign_up.dart';
 
 class Login extends StatelessWidget {
-  Rx isLogin = true.obs;
-  Rx isVisible = false.obs;
+  final FireAuth auth = Get.put(FireAuth());
+  final GetStorage box = GetStorage();
 
-  FireAuth auth = Get.put(FireAuth());
-  GetStorage box = GetStorage();
+  final RxBool isVisible = false.obs;
+
+  Login({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xff012931), Color(0xff012931)],
+      backgroundColor: const Color(0xff012931),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(Icons.lock_outline_rounded,
+                  color: Colors.white, size: 80),
+              const SizedBox(height: 16),
+              const Text(
+                'Welcome Back',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+
+              // Login field
+              TextFormField(
+                controller: auth.teacherId,
+                style: const TextStyle(color: Colors.white),
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: 'Login',
+                  labelStyle:
+                  const TextStyle(color: Colors.white70, fontSize: 15),
+                  prefixIcon:
+                  const Icon(Icons.person_outline, color: Colors.white70),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.white54),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide:
+                    const BorderSide(color: Colors.orangeAccent, width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Password field
+              Obx(() => TextFormField(
+                controller: auth.teacherPassword,
+                obscureText: !isVisible.value,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle:
+                  const TextStyle(color: Colors.white70, fontSize: 15),
+                  prefixIcon:
+                  const Icon(Icons.lock_outline, color: Colors.white70),
+                  suffixIcon: IconButton(
+                    onPressed: () =>
+                    isVisible.value = !isVisible.value,
+                    icon: Icon(
+                      isVisible.value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Colors.white54),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                        color: Colors.orangeAccent, width: 2),
+                  ),
+                ),
+              )),
+              const SizedBox(height: 32),
+
+              // Login button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orangeAccent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                onPressed: () {
+                  final id = auth.teacherId.text.trim();
+                  final pass = auth.teacherPassword.text.trim();
+
+                  if (id.isEmpty || pass.isEmpty) {
+                    Get.snackbar(
+                      'Error',
+                      'All fields must be filled.',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                      icon: const Icon(Icons.error, color: Colors.white),
+                      snackPosition: SnackPosition.TOP,
+                      duration: const Duration(seconds: 3),
+                    );
+                    return;
+                  }
+
+                  if (id == 'Linguista9' && pass == '6463070') {
+                    box.write('isLogged', id);
+                    Get.offAll(() => AdminHomeScreen());
+                  } else if (id == 'test' && pass == '123') {
+                    box.write('isLogged', 'testuser');
+                    Get.offAll(() => AdminHomeScreen());
+                  } else {
+                    auth.signIn(pass);
+                  }
+                },
+                child: const Text(
+                  'Login',
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Sign up redirect
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? ",
+                      style: TextStyle(color: Colors.white70, fontSize: 14)),
+                  TextButton(
+                    onPressed: () => Get.offAll(() => SignUp()),
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Colors.orangeAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-
-            Text(
-              'Login',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36.0,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20.0),
-            TextFormField(
-              keyboardType: TextInputType.text,
-              controller: auth.teacherId,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Login:',
-                labelStyle: TextStyle(color: Colors.white),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 32,
-            ),
-            TextFormField(
-
-              controller: auth.teacherPassword,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Password:',
-                labelStyle: TextStyle(color: Colors.white),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 32,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if(auth.teacherId.text == 'Linguista9' && auth.teacherPassword.text =='6463070' ){
-                  box.write('isLogged', auth.teacherId.text);
-                  Get.offAll(AdminHomeScreen());
-                }
-                else  if (auth.teacherId.text == 'Teacher'  ){
-                  auth.signIn(auth.teacherPassword.text);
-                }
-                else  if (auth.teacherId.text == 'test' && auth.teacherPassword.text =='123'){
-                  box.write('isLogged', 'testuser');
-                  Get.offAll(AdminHomeScreen());
-                }
-                else  {
-                  auth.signIn(auth.teacherPassword.text);
-                }
-              },
-              child: Text('login'.tr.capitalizeFirst!),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-              ),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-              TextButton(onPressed: (){
-                Get.offAll(SignUp());
-
-              }, child: Text('No account ? Sign up',style: appBarStyle.copyWith(
-                color: Colors.white,
-                fontSize: 14
-              ),))
-            ],)
-          ],
         ),
       ),
     );

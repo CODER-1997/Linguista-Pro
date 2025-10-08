@@ -46,6 +46,7 @@ dependencies:
 
   table_calendar: ^3.1.2
   font_awesome_flutter: ^10.7.0
+  flutter_slidable: ^3.1.2
 #
 #  share_plus: ^10.0.0
 #  pdf: ^3.9.0
@@ -87,9 +88,18 @@ flutter:
   assets:
     - assets/
     - assets/lottie/
+    - assets/icons/
 
 
-
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 900
+    - family: Lilita
+      fonts:
+        - asset: assets/fonts/LilitaOne-Regular.ttf
+          weight: 700
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
