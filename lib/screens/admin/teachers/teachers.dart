@@ -253,17 +253,9 @@ class _TeachersState extends State<Teachers> {
                 ),
                 SizedBox(height: 8,),
                 StreamBuilder(
-                    stream: _searchText.isEmpty
-                        ? FirebaseFirestore.instance
+                    stream:   FirebaseFirestore.instance
                         .collection('LinguistaTeachers')
-                        .snapshots()
-                        : FirebaseFirestore.instance
-                        .collection('LinguistaTeachers')
-                        .where('items.name',
-                        isGreaterThanOrEqualTo: _searchText)
-                        .where('items.name',
-                        isLessThanOrEqualTo: _searchText + '\uf8ff')
-                        .snapshots(),
+                        .snapshots() ,
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
@@ -272,7 +264,16 @@ class _TeachersState extends State<Teachers> {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       }
                       if (snapshot.hasData) {
-                        var teachers = snapshot.data!.docs;
+                        var teachers =[];
+
+                             for(var item in snapshot.data!.docs ){
+                               if(item['items']['uniqueId'].toString().contains('+998')==false){
+                                 teachers.add(item);
+                               }
+                             }
+
+
+
 
                         return teachers.length != 0
                             ? Column(
