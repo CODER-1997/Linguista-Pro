@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:linguista_ios/constants/text_styles.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../controllers/admin/teachers_controller.dart';
@@ -82,9 +83,15 @@ class SignUp extends StatelessWidget {
             ),
             TextFormField(
                 controller:secretKey ,
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  MaskTextInputFormatter(
+                      mask: '+998 ## ### ## ##',
+                      filter: {"#": RegExp(r'[0-9]')},
+                      type: MaskAutoCompletionType.lazy)
+                ],
                 decoration: buildInputDecoratione(
-                    'Enter keyword given by Admin'),
+                    'Phone number'),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "Maydonlar bo'sh bo'lmasligi kerak";
@@ -97,8 +104,8 @@ class SignUp extends StatelessWidget {
             // test,,,,,,ssss
             ElevatedButton(
               onPressed: () {
-                      if(secretKey.text =='maylikir' && teachersController.TeacherName.text.isNotEmpty && teachersController.TeacherSurname.text.isNotEmpty){
-                        teachersController.addNewTeacher();
+                      if(secretKey.text.toString().isNotEmpty && teachersController.TeacherName.text.isNotEmpty && teachersController.TeacherSurname.text.isNotEmpty){
+                        teachersController.signUpAsTeacher(secretKey.text);
                         Get.offAll(Login());
                         Get.snackbar(
                           duration: Duration(seconds: 5),

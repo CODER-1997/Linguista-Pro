@@ -99,6 +99,45 @@ class TeachersController extends GetxController {
     }
     isLoading.value = false;
   }
+  void signUpAsTeacher(String uniqueId) async {
+    isLoading.value = true;
+    try {
+      TeacherModel newData = TeacherModel(
+        name: TeacherName.text,
+        surname: TeacherSurname.text,
+        uniqueId: uniqueId.removeAllWhitespace,
+        isBanned: false,
+        groupIds: []
+        ,
+        groups: [],
+      );
+      // Create a new document with an empty list
+      await _dataCollection.add({
+        'items': newData.toMap(),
+      });
+      // Get.snackbar(
+      //   "Success !",
+      //   "New group added successfully !",
+      //   backgroundColor: Colors.green,
+      //   colorText: Colors.white,
+      //   snackPosition: SnackPosition.TOP,
+      // );
+      isLoading.value = false;
+      TeacherName.clear();
+      Get.back();
+    } catch (e) {
+      print(e);
+      Get.snackbar(
+        'Error:${e}',
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+    isLoading.value = false;
+  }
+
 
   void editTeacher(String documentId) async {
     isLoading.value = true;

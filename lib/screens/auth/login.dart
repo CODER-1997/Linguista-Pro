@@ -62,7 +62,7 @@ class Login extends StatelessWidget {
               height: 32,
             ),
             TextFormField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               controller: auth.teacherPassword,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -85,7 +85,7 @@ class Login extends StatelessWidget {
                   box.write('isLogged', auth.teacherId.text);
                   Get.offAll(AdminHomeScreen());
                 }
-                else  if (auth.teacherId.text == 'Teacher'){
+                else  if (auth.teacherId.text == 'Teacher' || auth.teacherPassword.text.startsWith('+998')){
                   auth.signIn(auth.teacherPassword.text);
                 }
                 else  if (auth.teacherId.text == 'test' && auth.teacherPassword.text =='123'){
