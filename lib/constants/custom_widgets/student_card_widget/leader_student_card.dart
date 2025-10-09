@@ -26,17 +26,11 @@ class GradientStudentCard extends StatelessWidget {
         Row(children: [
           SizedBox(width: 4,),
 
-          Text("$position",style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Nunito'
-
-          ),),
-          SizedBox(width: 12,),
           GradientLetterBox(letter: item['name'].toString().toUpperCase().substring(0,1)+""+item['surname'].toString().toUpperCase().substring(0,1), position: position,)
           ,SizedBox(width: 16,)
         ,
           Container(
-            width: Get.width/2,
+            width: Get.width/2.2,
             child: Text(item['name'].toString().toUpperCase()+" "+item['surname'].toString().toUpperCase(),style: TextStyle(
               color: CupertinoColors.black,
               fontSize: 12,

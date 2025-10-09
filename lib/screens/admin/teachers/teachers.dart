@@ -166,58 +166,91 @@ class _TeachersState extends State<Teachers> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
-        return Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom, top: 20),
-          child: Form(
-            key: _formKey,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Add Teacher",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: teachersController.TeacherName,
-                    decoration: buildInputDecoratione('Teacher name'),
-                    validator: (v) =>
-                    v!.isEmpty ? "Field cannot be empty" : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: teachersController.TeacherSurname,
-                    decoration: buildInputDecoratione('Teacher surname'),
-                    validator: (v) =>
-                    v!.isEmpty ? "Field cannot be empty" : null,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text('Assign Groups',
-                      style:
-                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  Obx(() => _buildGroupSelector(
-                      studentController.LinguistaGroups,
-                      teachersController.teacherGroupIds,
-                      teachersController.teacherGroups)),
-                  const SizedBox(height: 20),
-                  InkWell(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        teachersController.addNewTeacher();
-                        Get.back();
-                      }
-                    },
-                    child: Obx(() => CustomButton(
-                        isLoading: teachersController.isLoading.value,
-                        text: "Add Teacher")),
-                  ),
-                ],
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9, // initial height (90% of screen)
+          minChildSize: 0.5,     // minimum height
+          maxChildSize: 0.95,    // maximum height
+          builder: (_, controller) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 20,
               ),
-            ),
-          ),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  controller: controller,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          "Add Teacher",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: teachersController.TeacherName,
+                        decoration: buildInputDecoratione('Teacher name'),
+                        validator: (v) =>
+                        v!.isEmpty ? "Field cannot be empty" : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: teachersController.TeacherSurname,
+                        decoration: buildInputDecoratione('Teacher surname'),
+                        validator: (v) =>
+                        v!.isEmpty ? "Field cannot be empty" : null,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Assign Groups',
+                        style:
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      Obx(() => Container(
+                         height: Get.height/2,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Wrap(
+                            direction: Axis.vertical,
+
+                            children: _buildGroupSelector(
+                              studentController.LinguistaGroups,
+                              teachersController.teacherGroupIds,
+                              teachersController.teacherGroups,
+                            ),
+                          ),
+                        ),
+                      )),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              teachersController.addNewTeacher();
+                              Get.back();
+                            }
+                          },
+                          child: Obx(() => CustomButton(
+                              isLoading:
+                              teachersController.isLoading.value,
+                              text: "Add Teacher")),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -232,103 +265,129 @@ class _TeachersState extends State<Teachers> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) {
-        return Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom, top: 20),
-          child: Form(
-            key: _formKey,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Edit Teacher",
-                      style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: teachersController.TeacherNameEdit,
-                    decoration: buildInputDecoratione('Teacher name'),
-                    validator: (v) =>
-                    v!.isEmpty ? "Field cannot be empty" : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: teachersController.TeacherSurnameEdit,
-                    decoration: buildInputDecoratione('Teacher surname'),
-                    validator: (v) =>
-                    v!.isEmpty ? "Field cannot be empty" : null,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text('Edit Groups',
-                      style:
-                      TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  Obx(() => _buildGroupSelector(
-                      studentController.LinguistaGroups,
-                      teachersController.teacherGroupIdsEdit,
-                      teachersController.teacherGroupsEdit)),
-                  const SizedBox(height: 20),
-                  InkWell(
-                    onTap: () {
-                      if (_formKey.currentState!.validate()) {
-                        teachersController.editTeacher(teacherId);
-                        Get.back();
-                      }
-                    },
-                    child: Obx(() => CustomButton(
-                        isLoading: teachersController.isLoading.value,
-                        text: "Save Changes")),
-                  ),
-                ],
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.95, // almost full screen
+          minChildSize: 0.5,
+          maxChildSize: 1.0, // full height
+          builder: (_, controller) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 20,
               ),
-            ),
-          ),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  controller: controller,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Center(
+                        child: Text(
+                          "Edit Teacher",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: teachersController.TeacherNameEdit,
+                        decoration: buildInputDecoratione('Teacher name'),
+                        validator: (v) =>
+                        v!.isEmpty ? "Field cannot be empty" : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: teachersController.TeacherSurnameEdit,
+                        decoration: buildInputDecoratione('Teacher surname'),
+                        validator: (v) =>
+                        v!.isEmpty ? "Field cannot be empty" : null,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Edit Groups',
+                        style:
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      // Groups - vertically wrapped
+                      Obx(() => Container(
+                        constraints:
+                        BoxConstraints(maxHeight: Get.height / 2),
+                        child: SingleChildScrollView(
+                          child: Wrap(
+                            direction: Axis.vertical,
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _buildGroupSelector(
+                              studentController.LinguistaGroups,
+                              teachersController.teacherGroupIdsEdit,
+                              teachersController.teacherGroupsEdit,
+                            ),
+                          ),
+                        ),
+                      )),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              teachersController.editTeacher(teacherId);
+                              Get.back();
+                            }
+                          },
+                          child: Obx(() => CustomButton(
+                              isLoading: teachersController.isLoading.value,
+                              text: "Save Changes")),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildGroupSelector(List groups, RxList selectedIds, RxList selectedGroups) {
-    return Container(
-      height: 100,
-      alignment: Alignment.topLeft,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: groups.map((g) {
-            final isSelected = selectedIds.contains(g['group_id']);
-            return GestureDetector(
-              onTap: () {
-                if (isSelected) {
-                  selectedIds.remove(g['group_id']);
-                  selectedGroups.removeWhere(
-                          (el) => el['group_id'] == g['group_id']);
-                } else {
-                  selectedIds.add(g['group_id']);
-                  selectedGroups.add(g);
-                }
-              },
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                margin: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.green : Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(
-                      color: isSelected ? Colors.green : Colors.black),
-                ),
-                child: Text(
-                  g['group_name'],
-                  style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
+  List<Widget> _buildGroupSelector(List groups, RxList selectedIds, RxList selectedGroups) {
+    return   groups.map((g) {
+        final isSelected = selectedIds.contains(g['group_id']);
+        return GestureDetector(
+          onTap: () {
+            if (isSelected) {
+              selectedIds.remove(g['group_id']);
+              selectedGroups.removeWhere(
+                      (el) => el['group_id'] == g['group_id']);
+            } else {
+              selectedIds.add(g['group_id']);
+              selectedGroups.add(g);
+            }
+          },
+          child: Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            margin: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.green : Colors.white,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                  color: isSelected ? Colors.green : Colors.black),
+            ),
+            child: Text(
+              g['group_name'],
+              style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,fontSize: 16),
+            ),
+          ),
+        );
+      }).toList();
+
   }
 }
