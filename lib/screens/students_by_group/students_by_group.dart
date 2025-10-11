@@ -1,4 +1,5 @@
 import 'package:linguista_ios/screens/students_by_group/grading_students.dart';
+import 'package:linguista_ios/screens/students_by_group/student_by_group_income_by_month.dart';
 import 'package:linguista_ios/screens/students_by_group/students_by_group_attendance.dart';
 import 'package:linguista_ios/screens/students_by_group/students_by_group_grading.dart';
 import 'package:flutter/cupertino.dart';
@@ -113,7 +114,7 @@ class _StudentsByGroupState extends State<StudentsByGroup>
                   style: TextStyle(color: Colors.white),
                 )),
             Text(
-              'Imtihonlar',
+              "Oylik to'lovlar",
               style: TextStyle(color: Colors.white),
             ),
 
@@ -152,22 +153,9 @@ class _StudentsByGroupState extends State<StudentsByGroup>
             groupId: widget.groupId,
             groupName: widget.groupName,
           ),
-       Scaffold(
-         body: Center(child: Padding(
-           padding:  EdgeInsets.all(Get.width/5),
-           child: Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-             crossAxisAlignment: CrossAxisAlignment.center,
-             children: [
-               Lottie.asset('assets/lottie/under_dev.json'),
-               SizedBox(height: 16,),
-               Text('Coming soon ...',style: appBarStyle.copyWith(
-
-               ),)
-             ],
-           ),
-         ),),
-       )
+       StudentByGroupIncomeByMonth(
+         groupId: widget.groupId,
+         groupName: widget.groupName,)
 
         ],
       )),
