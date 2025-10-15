@@ -1,8 +1,7 @@
 import 'package:linguista_ios/screens/students_by_group/grading_students.dart';
 import 'package:linguista_ios/screens/students_by_group/student_by_group_income_by_month.dart';
 import 'package:linguista_ios/screens/students_by_group/students_by_group_attendance.dart';
-import 'package:linguista_ios/screens/students_by_group/students_by_group_grading.dart';
-import 'package:flutter/cupertino.dart';
+ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';

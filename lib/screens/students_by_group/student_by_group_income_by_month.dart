@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:linguista_ios/constants/theme.dart';
 
@@ -63,6 +64,7 @@ class StudentByGroupIncomeByMonth extends StatelessWidget {
     return formatter.format(value).replaceAll(',', ' ') + " so'm";
   }
 
+  GetStorage box = GetStorage();
 
 
 
@@ -162,7 +164,7 @@ class StudentByGroupIncomeByMonth extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Income: ${calculateTotalPayments(students, monthList[index])}',
+                               box.read('isLogged') !='Linguista9'?"***":     'Income: ${calculateTotalPayments(students, monthList[index])}',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
                                       fontSize: 13,

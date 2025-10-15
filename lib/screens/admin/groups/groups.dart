@@ -8,13 +8,11 @@ import 'package:linguista_ios/constants/custom_widgets/group_shimmer.dart';
 import 'package:linguista_ios/controllers/auth/login_controller.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../constants/custom_widgets/FormFieldDecorator.dart';
-import '../../../constants/custom_widgets/custom_dialog.dart';
-import '../../../constants/custom_widgets/gradient_button.dart';
+ import '../../../constants/custom_widgets/gradient_button.dart';
 import '../../../constants/text_styles.dart';
 import '../../../constants/theme.dart';
 import '../../../controllers/groups/group_controller.dart';
-import '../../../main.dart';
-import '../../students_by_group/students_by_group.dart';
+ import '../../students_by_group/students_by_group.dart';
 
 class AdminGroups extends StatefulWidget {
   @override
@@ -300,10 +298,14 @@ class _AdminGroupsState extends State<AdminGroups> {
                                                   ElevatedButton(
 
                                                       onPressed: (){
-                                                        groupController.deleteGroup(document.id);
+                                                        if(    box.read('isLogged') == 'Linguista9' ){
+
+                                                          groupController.deleteGroup(document.id);
 
 
-                                                        Navigator.pop(context);
+                                                          Navigator.pop(context);
+                                                        }
+
 
                                                       },
                                                       style: ElevatedButton.styleFrom(
@@ -355,20 +357,12 @@ class _AdminGroupsState extends State<AdminGroups> {
                         ),
                         child: InkWell(
                           onTap: () {
-                            if (box.read('isLogged') == 'testuser') {
-                              Get.snackbar(
-                                "Error",
-                                "Test account is not allowed.",
-                                backgroundColor: Colors.red,
-                                colorText: Colors.white,
-                                icon: const Icon(Icons.block, color: Colors.white),
-                              );
-                            } else {
+
                               Get.to(StudentsByGroup(
                                 groupId: document['items']['uniqueId'],
                                 groupName: document['items']['name'],
                               ));
-                            }
+
                           },
                           child: Container(
                             width: Get.width,

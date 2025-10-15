@@ -362,7 +362,7 @@ class StudentInfo extends StatelessWidget {
                 box.read('isLogged') == 'Linguista9' ?    SizedBox(
                   height: 2,
                 ):SizedBox(),
-                box.read('isLogged') == 'Linguista9' ?         InkWell(
+                box.read('isLogged') == 'Linguista9' || box.read('isLogged') == 'testuser' ?         InkWell(
                   onTap: () {
                     if(  data['items']['isFreeOfcharge']  == false){
                       Get.to(AdminStudentPaymentHistory(
