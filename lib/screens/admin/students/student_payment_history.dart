@@ -71,7 +71,7 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
           style:
           appBarStyle.copyWith(color: CupertinoColors.black, fontSize: 12),
         ),
-       
+
       ),
       body:   SingleChildScrollView(
         child: StreamBuilder(
@@ -212,72 +212,73 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(16),
                                           ),
-                                          child: Container(
-                                            padding: const EdgeInsets.all(20),
-                                            height: Get.height / 2.4,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                const Text(
-                                                  "Edit Payment",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.deepPurple),
-                                                ),
-                                                TextFormField(
-                                                  inputFormatters: [ThousandSeparatorInputFormatter()],
-                                                  keyboardType: TextInputType.number,
-                                                  controller: studentController.payment,
-                                                  decoration:
-                                                  buildInputDecoratione('Enter amount (so‘m)'),
-                                                  validator: (value) =>
-                                                  value!.isEmpty ? "Required field" : null,
-                                                ),
-                                                TextFormField(
-                                                  controller: studentController.paymentComment,
-                                                  decoration: buildInputDecoratione('Comment'),
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Obx(() => Text(
-                                                        'Paid date: ${studentController.paidDate.value}')),
-                                                    IconButton(
-                                                      onPressed: () {
-                                                        studentController
-                                                            .showDate(studentController.paidDate);
-                                                      },
-                                                      icon: const Icon(CupertinoIcons.calendar_today,
-                                                          color: Colors.deepPurple),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Obx(() => InkWell(
-                                                  onTap: (){
-                                                    if (_formKey
-                                                        .currentState!
-                                                        .validate() &&
-                                                        studentController
-                                                            .paidDate
-                                                            .value
-                                                            .isNotEmpty) {
-                                                      print(widget.id);
-                                                      print(payments[0]['items']['payments']
-                                                      [
-                                                      i]
-                                                      [
-                                                      'id']);
-                                                      studentController.editPayment(
-                                                          widget.id,
-                                                          payments[0]['items']['payments'][i]
-                                                          [
-                                                          'id']);
-                                                    }                                                  },
-                                                  child: CustomButton(
-                                                      isLoading: studentController.isLoading.value,
-                                                      text: "Save Changes"),
-                                                )),
-                                              ],
+                                          child: Form(
+                                            key: _formKey,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(20),
+                                              height: Get.height / 2.4,
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    "Edit Payment",
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.deepPurple),
+                                                  ),
+                                                  TextFormField(
+                                                    inputFormatters: [ThousandSeparatorInputFormatter()],
+                                                    keyboardType: TextInputType.number,
+                                                    controller: studentController.payment,
+                                                    decoration:
+                                                    buildInputDecoratione('Enter amount (so‘m)'),
+                                                    validator: (value) =>
+                                                    value!.isEmpty ? "Required field" : null,
+                                                  ),
+                                                  TextFormField(
+                                                    controller: studentController.paymentComment,
+                                                    decoration: buildInputDecoratione('Comment'),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Obx(() => Text(
+                                                          'Paid date: ${studentController.paidDate.value}')),
+                                                      IconButton(
+                                                        onPressed: () {
+                                                          studentController
+                                                              .showDate(studentController.paidDate);
+                                                        },
+                                                        icon: const Icon(CupertinoIcons.calendar_today,
+                                                            color: Colors.deepPurple),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Obx(() => InkWell(
+                                                    onTap: (){
+                                                                            if (_formKey  .currentState!  .validate() &&
+                                                          studentController
+                                                              .paidDate
+                                                              .value
+                                                              .isNotEmpty) {
+                                                        print(widget.id);
+                                                        print(payments[0]['items']['payments']
+                                                        [
+                                                        i]
+                                                        [
+                                                        'id']);
+                                                        studentController.editPayment(
+                                                            widget.id,
+                                                            payments[0]['items']['payments'][i]
+                                                            [
+                                                            'id']);
+                                                      }                                                  },
+                                                    child: CustomButton(
+                                                        isLoading: studentController.isLoading.value,
+                                                        text: "Save Changes"),
+                                                  )),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         );

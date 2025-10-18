@@ -79,11 +79,22 @@ class _TeachersState extends State<Teachers> {
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   onTap: () => Get.to(Teacherinfo(documentId: teachers[index].id)),
-                  leading: CircleAvatar(
+                  leading: teacher  != null &&
+                      teacher ['imgUrl'] != null &&
+                      teacher ['imgUrl'].toString().isNotEmpty
+                      ? CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(teacher ['imgUrl']),
+                  )
+                      : CircleAvatar(
+                    radius: 25,
                     backgroundColor: Colors.blue.shade50,
                     child: Text(
                       teacher['name'][0].toUpperCase(),
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
                     ),
                   ),
                   title: Text(
@@ -104,8 +115,8 @@ class _TeachersState extends State<Teachers> {
                           teachersController.teacherGroupIdsEdit.clear();
                           studentController.fetchGroups();
 
-                          teachersController.setValues(
-                              teacher['name'], teacher['surname']);
+                          teachersController
+                              .setValues(teacher['name'], teacher['surname']);
                           teachersController.teacherGroupIdsEdit
                               .addAll(teacher['groupIds']);
                           teachersController.teacherGroupsEdit
@@ -117,30 +128,28 @@ class _TeachersState extends State<Teachers> {
                       IconButton(
                         icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                         onPressed: () {
-
-
-                          if(GetStorage().read('isLogged') == 'Linguista9'){
+                          if (GetStorage().read('isLogged') == 'Linguista9') {
                             showDialog(
                               context: context,
                               builder: (_) => CustomAlertDialog(
                                 title: "Delete Teacher",
-                                description: "Are you sure you want to delete this teacher?",
+                                description:
+                                "Are you sure you want to delete this teacher?",
                                 onConfirm: () =>
                                     teachersController.deleteTeacher(teachers[index].id),
                                 img: 'assets/delete.png',
                               ),
                             );
+                          } else {
+                            showCustomSnackBar(context,
+                                title: 'Error', message: 'Only admin can delete');
                           }
-                          else {
-                            showCustomSnackBar(context, title: 'Error', message: 'Only admin can delete');
-                          }
-
-
                         },
                       ),
                     ],
                   ),
-                ),
+                )
+
               );
             },
           );
