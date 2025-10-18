@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:linguista_ios/constants/custom_funcs/snackbar.dart';
 import '../../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../../constants/custom_widgets/custom_dialog.dart';
 import '../../../constants/custom_widgets/gradient_button.dart';
@@ -115,16 +117,25 @@ class _TeachersState extends State<Teachers> {
                       IconButton(
                         icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => CustomAlertDialog(
-                              title: "Delete Teacher",
-                              description: "Are you sure you want to delete this teacher?",
-                              onConfirm: () =>
-                                  teachersController.deleteTeacher(teachers[index].id),
-                              img: 'assets/delete.png',
-                            ),
-                          );
+
+
+                          if(GetStorage().read('isLogged') == 'Linguista9'){
+                            showDialog(
+                              context: context,
+                              builder: (_) => CustomAlertDialog(
+                                title: "Delete Teacher",
+                                description: "Are you sure you want to delete this teacher?",
+                                onConfirm: () =>
+                                    teachersController.deleteTeacher(teachers[index].id),
+                                img: 'assets/delete.png',
+                              ),
+                            );
+                          }
+                          else {
+                            showCustomSnackBar(context, title: 'Error', message: 'Only admin can delete');
+                          }
+
+
                         },
                       ),
                     ],

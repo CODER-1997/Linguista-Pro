@@ -93,9 +93,7 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
                 return payments[0]['items']['payments'].isNotEmpty
                     ? Column(
                   children: [
-                    for (int i = 0;
-                    i < payments[0]['items']['payments'].length;
-                    i++)
+         for (int i = 0;  i < payments[0]['items']['payments'].length;  i++)
                       Container(
                         width: Get.width,
                         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
@@ -203,7 +201,7 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
 
                                   disabledColor: Colors.grey,
 
-                                  onPressed:  box.read('isEnabled') !='Linguista9'?null: () {
+                                  onPressed:  box.read('isLogged') !='Linguista9'?null: () {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -254,9 +252,31 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
                                                     ),
                                                   ],
                                                 ),
-                                                Obx(() => CustomButton(
-                                                    isLoading: studentController.isLoading.value,
-                                                    text: "Save Changes")),
+                                                Obx(() => InkWell(
+                                                  onTap: (){
+                                                    if (_formKey
+                                                        .currentState!
+                                                        .validate() &&
+                                                        studentController
+                                                            .paidDate
+                                                            .value
+                                                            .isNotEmpty) {
+                                                      print(widget.id);
+                                                      print(payments[0]['items']['payments']
+                                                      [
+                                                      i]
+                                                      [
+                                                      'id']);
+                                                      studentController.editPayment(
+                                                          widget.id,
+                                                          payments[0]['items']['payments'][i]
+                                                          [
+                                                          'id']);
+                                                    }                                                  },
+                                                  child: CustomButton(
+                                                      isLoading: studentController.isLoading.value,
+                                                      text: "Save Changes"),
+                                                )),
                                               ],
                                             ),
                                           ),
@@ -274,8 +294,31 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
                                   tooltip: "Delete payment",
                                   onPressed: () {
                                     if (box.read('isLogged') == 'Linguista9') {
-                                      studentController.deletePayment(widget.id,
-                                          payments[0]['items']['payments'][i]['id']);
+                                      showCupertinoDialog(
+                                        context: context,
+                                        builder: (_) => CupertinoAlertDialog(
+                                          title: const Text('Delete Payment'),
+                                          content: const Text('Are you sure you want to delete this payment?'),
+                                          actions: [
+                                            CupertinoDialogAction(
+                                              child: const Text('Cancel'),
+                                              onPressed: () => Get.back(),
+                                            ),
+                                            CupertinoDialogAction(
+                                              isDestructiveAction: true,
+                                              child: const Text('Delete'),
+                                              onPressed: () {
+                                                Get.back(); // close dialog first
+                                                studentController.deletePayment(
+                                                  widget.id,
+                                                  payments[0]['items']['payments'][i]['id'],
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
                                     } else {
                                       showCustomSnackBar(
                                         context,
