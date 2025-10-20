@@ -32,18 +32,15 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+
+	<!-- Fix: Move array directly under UISupportedInterfaceOrientations -->
 	<key>UISupportedInterfaceOrientations</key>
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs access to your photo library to allow you to select a profile picture.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>This app needs access to your camera to allow you to take a new profile picture.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Optional: Only include this if you plan to record video with sound.</string>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -51,5 +48,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- Permissions -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to allow you to select a profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera to allow you to take a new profile picture.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Optional: Only include this if you plan to record video with sound.</string>
 </dict>
 </plist>
