@@ -12,7 +12,7 @@ import 'package:linguista_ios/screens/splash/intro_screen.dart';
 import 'firebase_options.dart';
 
 
-
+////
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
