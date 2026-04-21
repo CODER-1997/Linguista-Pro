@@ -1,10 +1,7 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:linguista_ios/constants/custom_funcs/snackbar.dart';
@@ -13,7 +10,6 @@ import '../../../constants/custom_widgets/FormFieldDecorator.dart';
 import '../../../constants/custom_widgets/gradient_button.dart';
 import '../../../constants/input_formatter.dart';
 import '../../../constants/text_styles.dart';
-import '../../../constants/theme.dart';
 import '../../../constants/utils.dart';
 import '../../../controllers/students/student_controller.dart';
 
@@ -24,27 +20,306 @@ class AdminStudentPaymentHistory extends StatefulWidget {
   final String surname;
   final List paidMonths;
 
-  AdminStudentPaymentHistory(
-      {required this.uniqueId,
-        required this.id,
-        required this.name,
-        required this.surname,
-        required this.paidMonths
-      });
+  const AdminStudentPaymentHistory({
+    super.key,
+    required this.uniqueId,
+    required this.id,
+    required this.name,
+    required this.surname,
+    required this.paidMonths,
+  });
 
   @override
-  State<AdminStudentPaymentHistory> createState() => _AdminStudentPaymentHistoryState();
+  State<AdminStudentPaymentHistory> createState() =>
+      _AdminStudentPaymentHistoryState();
 }
 
-class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>  with SingleTickerProviderStateMixin{
-  StudentController studentController = Get.put(StudentController());
-
+class _AdminStudentPaymentHistoryState
+    extends State<AdminStudentPaymentHistory> with SingleTickerProviderStateMixin {
+  final StudentController studentController = Get.put(StudentController());
   final _formKey = GlobalKey<FormState>();
-
+  final GetStorage box = GetStorage();
 
   List<String> months = getFormattedMonthsOfCurrentYear();
 
-  GetStorage box = GetStorage();
+  void _openPaymentSheet({
+    required BuildContext context,
+    required bool isEdit,
+    Map<String, dynamic>? paymentItem,
+  }) {
+    final RxString paymentType =
+        ((paymentItem?['paymentType'] ?? 'Naqt')).toString().obs;
+
+    if (isEdit && paymentItem != null) {
+      studentController.payment.text =
+          (paymentItem['paidSum'] ?? '').toString();
+      studentController.paymentComment.text =
+          (paymentItem['paymentCommentary'] ?? '').toString();
+      studentController.paidDate.value =
+          (paymentItem['paidDate'] ?? '').toString();
+    } else {
+      studentController.payment.clear();
+      studentController.paymentComment.clear();
+      studentController.paidDate.value = '';
+      paymentType.value = 'Naqt';
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        Text(
+                          isEdit ? "Edit payment" : "Add fee",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    TextFormField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [ThousandSeparatorInputFormatter()],
+                      controller: studentController.payment,
+                      decoration: buildInputDecoratione('Price'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Maydonlar bo'sh bo'lmasligi kerak";
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      controller: studentController.paymentComment,
+                      decoration: buildInputDecoratione('Commentary'),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: const Text(
+                        "To'lov turi",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Obx(
+                          () => Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => paymentType.value = 'Naqt',
+                              child: Container(
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: paymentType.value == 'Naqt'
+                                      ? Colors.green
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: paymentType.value == 'Naqt'
+                                        ? Colors.green
+                                        : Colors.grey.shade300,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Naqt",
+                                    style: TextStyle(
+                                      color: paymentType.value == 'Naqt'
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () => paymentType.value = 'Karta',
+                              child: Container(
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: paymentType.value == 'Karta'
+                                      ? Colors.blue
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: paymentType.value == 'Karta'
+                                        ? Colors.blue
+                                        : Colors.grey.shade300,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Karta",
+                                    style: TextStyle(
+                                      color: paymentType.value == 'Karta'
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Obx(
+                                () => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                studentController.paidDate.value.isEmpty
+                                    ? 'Paid date tanlanmagan'
+                                    : 'Paid date: ${studentController.paidDate.value}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: studentController.paidDate.value.isEmpty
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () {
+                            studentController.showDate(
+                              studentController.paidDate,
+                            );
+                          },
+                          child: Container(
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.calendar_month,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: InkWell(
+                        onTap: () {
+                          if (_formKey.currentState!.validate() &&
+                              studentController.paidDate.value.isNotEmpty) {
+                            if (isEdit) {
+                              studentController.editPayment(
+                                widget.id,
+                                paymentItem!['id'],
+                                paymentType.value,
+                              );
+                            } else {
+                              studentController.addPayment(
+                                widget.id,
+                                studentController.paidDate.value,
+                                paymentType.value,
+                              );
+                            }
+                          }
+                        },
+                        child: Obx(
+                              () => CustomButton(
+                            isLoading: studentController.isLoading.value,
+                            text: isEdit
+                                ? "Save Changes"
+                                : 'confirm'.tr.capitalizeFirst!,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatMoney(String value) {
+    final number = int.tryParse(value.replaceAll(' ', '')) ?? 0;
+    final formatter = NumberFormat('#,###');
+    return formatter.format(number).replaceAll(',', ' ');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +327,8 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-
-
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: CupertinoColors.black,
           ),
@@ -68,445 +341,297 @@ class _AdminStudentPaymentHistoryState extends State<AdminStudentPaymentHistory>
               " " +
               "${widget.surname}".capitalizeFirst! +
               "  payment history",
-          style:
-          appBarStyle.copyWith(color: CupertinoColors.black, fontSize: 12),
+          style: appBarStyle.copyWith(
+            color: CupertinoColors.black,
+            fontSize: 12,
+          ),
         ),
-
       ),
-      body:   SingleChildScrollView(
+      body: SingleChildScrollView(
         child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('LinguistaStudents').where('items.uniqueId',isEqualTo: '${widget.uniqueId}')
-                .snapshots(),
-            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container(
-                    height: Get.height,
-                    width: Get.width,
-                    child: Center(child: CircularProgressIndicator()));
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              if (snapshot.hasData) {
-                List payments = snapshot.data!.docs;
-                return payments[0]['items']['payments'].isNotEmpty
-                    ? Column(
+          stream: FirebaseFirestore.instance
+              .collection('LinguistaStudents')
+              .where('items.uniqueId', isEqualTo: widget.uniqueId)
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return SizedBox(
+                height: Get.height,
+                width: Get.width,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No data'));
+            }
+
+            final payments = snapshot.data!.docs;
+            final paymentList =
+            List.from(payments[0]['items']['payments'] ?? []);
+
+            if (paymentList.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-         for (int i = 0;  i < payments[0]['items']['payments'].length;  i++)
-                      Container(
-                        width: Get.width,
-                        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                    const SizedBox(height: 200),
+                    Image.asset(
+                      'assets/fee_not_charged.png',
+                      width: 222,
+                    ),
+                    Text(
+                      '${widget.name}'.capitalizeFirst! +
+                          " " +
+                          "${widget.surname}".capitalizeFirst! +
+                          " has not any payments ",
+                      style: const TextStyle(color: Colors.black, fontSize: 12),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            }
+
+            return Column(
+              children: [
+                for (int i = 0; i < paymentList.length; i++)
+                  Container(
+                    width: Get.width,
+                    margin:
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F5F9),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                CupertinoIcons.money_dollar,
+                                color: Colors.black,
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    convertDate(
+                                      "${paymentList[i]['paidDate']}",
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    "Payment",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ((paymentList[i]['paymentType'] ??
+                                    'Naqt') ==
+                                    'Karta')
+                                    ? const Color(0xFFE0F2FE)
+                                    : const Color(0xFFDCFCE7),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                "${paymentList[i]['paymentType'] ?? 'Naqt'}",
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: ((paymentList[i]['paymentType'] ??
+                                      'Naqt') ==
+                                      'Karta')
+                                      ? const Color(0xFF0369A1)
+                                      : const Color(0xFF15803D),
+                                ),
+                              ),
                             ),
                           ],
-                          border: Border.all(color: Colors.grey.shade200, width: 1),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                        const SizedBox(height: 12),
+
+                        Text(
+                          "${_formatMoney(paymentList[i]['paidSum'].toString())} so'm",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        if ((paymentList[i]['paymentCommentary'] ?? '')
+                            .toString()
+                            .trim()
+                            .isNotEmpty)
+                          Text(
+                            "${paymentList[i]['paymentCommentary']}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+
+                        const SizedBox(height: 10),
+
+                        Row(
                           children: [
-                            // Header row with icons
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(CupertinoIcons.money_dollar_circle_fill,
-                                        color: Colors.green, size: 24),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      "Payment Details",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 15,
-                                          color: Colors.grey.shade800),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            Expanded(
+                              child: InkWell(
+                                onTap: box.read('isLogged') != 'Linguista9'
+                                    ? null
+                                    : () {
+                                  final item = Map<String, dynamic>.from(
+                                    paymentList[i],
+                                  );
+
+                                  _openPaymentSheet(
+                                    context: context,
+                                    isEdit: true,
+                                    paymentItem: item,
+                                  );
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  height: 42,
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.deepPurpleAccent, Colors.deepPurple],
-                                    ),
+                                    color: const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(CupertinoIcons.calendar, color: Colors.white, size: 14),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        convertDate("${payments[0]['items']['payments'][i]['paidDate']}"),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Icon(
+                                    CupertinoIcons.pencil,
+                                    size: 20,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-
-                            const SizedBox(height: 10),
-
-                            // Amount section
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(CupertinoIcons.creditcard_fill,
-                                        color: Colors.blueAccent, size: 22),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      "To‘lov miqdori:",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "${payments[0]['items']['payments'][i]['paidSum']} so'm",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 8),
-                            Divider(height: 1, color: Colors.grey.shade200),
-                            const SizedBox(height: 8),
-
-                            // Action buttons
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  tooltip: "Edit payment",
-
-                                  disabledColor: Colors.grey,
-
-                                  onPressed:  box.read('isLogged') !='Linguista9'?null: () {
-                                    showDialog(
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  if (box.read('isLogged') == 'Linguista9') {
+                                    showCupertinoDialog(
                                       context: context,
-                                      builder: (BuildContext context) {
-                                        return Dialog(
-                                          backgroundColor: Colors.white,
-                                          insetPadding:
-                                          const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          child: Form(
-                                            key: _formKey,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(20),
-                                              height: Get.height / 2.4,
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    "Edit Payment",
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.deepPurple),
-                                                  ),
-                                                  TextFormField(
-                                                    inputFormatters: [ThousandSeparatorInputFormatter()],
-                                                    keyboardType: TextInputType.number,
-                                                    controller: studentController.payment,
-                                                    decoration:
-                                                    buildInputDecoratione('Enter amount (so‘m)'),
-                                                    validator: (value) =>
-                                                    value!.isEmpty ? "Required field" : null,
-                                                  ),
-                                                  TextFormField(
-                                                    controller: studentController.paymentComment,
-                                                    decoration: buildInputDecoratione('Comment'),
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Obx(() => Text(
-                                                          'Paid date: ${studentController.paidDate.value}')),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          studentController
-                                                              .showDate(studentController.paidDate);
-                                                        },
-                                                        icon: const Icon(CupertinoIcons.calendar_today,
-                                                            color: Colors.deepPurple),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Obx(() => InkWell(
-                                                    onTap: (){
-                                                                            if (_formKey  .currentState!  .validate() &&
-                                                          studentController
-                                                              .paidDate
-                                                              .value
-                                                              .isNotEmpty) {
-                                                        print(widget.id);
-                                                        print(payments[0]['items']['payments']
-                                                        [
-                                                        i]
-                                                        [
-                                                        'id']);
-                                                        studentController.editPayment(
-                                                            widget.id,
-                                                            payments[0]['items']['payments'][i]
-                                                            [
-                                                            'id']);
-                                                      }                                                  },
-                                                    child: CustomButton(
-                                                        isLoading: studentController.isLoading.value,
-                                                        text: "Save Changes"),
-                                                  )),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: const Icon(
-                                    CupertinoIcons.pencil_circle_fill,
-                                    color: Colors.deepPurple,
-                                    size: 28,
-                                  ),
-                                ),
-                                IconButton(
-                                  tooltip: "Delete payment",
-                                  onPressed: () {
-                                    if (box.read('isLogged') == 'Linguista9') {
-                                      showCupertinoDialog(
-                                        context: context,
-                                        builder: (_) => CupertinoAlertDialog(
-                                          title: const Text('Delete Payment'),
-                                          content: const Text('Are you sure you want to delete this payment?'),
-                                          actions: [
-                                            CupertinoDialogAction(
-                                              child: const Text('Cancel'),
-                                              onPressed: () => Get.back(),
-                                            ),
-                                            CupertinoDialogAction(
-                                              isDestructiveAction: true,
-                                              child: const Text('Delete'),
-                                              onPressed: () {
-                                                Get.back(); // close dialog first
-                                                studentController.deletePayment(
-                                                  widget.id,
-                                                  payments[0]['items']['payments'][i]['id'],
-                                                );
-                                              },
-                                            ),
-                                          ],
+                                      builder: (_) => CupertinoAlertDialog(
+                                        title: const Text('Delete Payment'),
+                                        content: const Text(
+                                          'Haqiqatan ham shu to‘lovni o‘chirmoqchimisiz?',
                                         ),
-                                      );
-
-                                    } else {
-                                      showCustomSnackBar(
-                                        context,
-                                        title: 'Warning',
-                                        message: 'Only admin can change data',
-                                        backgroundColor: CupertinoColors.systemYellow,
-                                        icon: Icons.warning_rounded,
-                                      );
-                                    }
-                                  },
-                                  icon: const Icon(
-                                    CupertinoIcons.trash_fill,
-                                    color: Colors.redAccent,
-                                    size: 28,
+                                        actions: [
+                                          CupertinoDialogAction(
+                                            child: const Text('Bekor qilish'),
+                                            onPressed: () => Get.back(),
+                                          ),
+                                          CupertinoDialogAction(
+                                            isDestructiveAction: true,
+                                            child: const Text('O‘chirish'),
+                                            onPressed: () {
+                                              Get.back();
+                                              studentController.deletePayment(
+                                                widget.id,
+                                                paymentList[i]['id'],
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    showCustomSnackBar(
+                                      context,
+                                      title: 'Warning',
+                                      message: 'Only admin can change data',
+                                      backgroundColor:
+                                      CupertinoColors.systemYellow,
+                                      icon: Icons.warning_rounded,
+                                    );
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  height: 42,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFEF2F2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    CupertinoIcons.delete,
+                                    color: Colors.red,
+                                    size: 20,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      )
-
-                  ],
-                )
-                    : Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 200,
-                      ),
-                      Image.asset(
-                        'assets/fee_not_charged.png',
-                        width: 222,
-                      ),
-                      Text(
-                        '${widget.name}'.capitalizeFirst! +
-                            " " +
-                            "${widget.surname}".capitalizeFirst! +
-                            " has not any payments ",
-                        style:
-                        TextStyle(color: Colors.black, fontSize: 12),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                );
-              }
-              // If no data available
-
-              else {
-                return Text('No data'); // No data available
-              }
-            }),
+                const SizedBox(height: 90),
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
-
-        child: Icon(CupertinoIcons.add,color: Colors.white,),
+        child: const Icon(CupertinoIcons.add, color: Colors.white),
         onPressed: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              backgroundColor: Colors.white38,
-              insetPadding: EdgeInsets.symmetric(horizontal: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0)),
-              //this right here
-              child: Form(
-                key: _formKey,
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12)),
-                  width: Get.width,
-                  height: Get.height / 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(),
-                          Text("Add fee"),
-                          IconButton(
-                              onPressed: Get.back,
-                              icon: Icon(Icons.close))
-                        ],
-                      ),
-                      TextFormField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            ThousandSeparatorInputFormatter(),
-                          ],
-                          controller: studentController.payment,
-                          decoration: buildInputDecoratione('Price'),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Maydonlar bo'sh bo'lmasligi kerak";
-                            }
-                            return null;
-                          }),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
+          studentController.payment.clear();
+          studentController.paymentComment.clear();
+          studentController.paidDate.value = '';
 
-                        controller: studentController.paymentComment,
-                        decoration:
-                        buildInputDecoratione('Commentary'),
-                        // validator: (value) {
-                        //   if (value!.isEmpty) {
-                        //     return "Maydonlar bo'sh bo'lmasligi kerak";
-                        //   }
-                        //   return null;
-                        // },
-                      ),
-                      Row(
-                        children: [
-                          Obx(
-                                () => Text(
-                                'Paid date:  ${studentController.paidDate.value}'),
-                          ),
-                          IconButton(
-                              onPressed: () {
-                                studentController.showDate(
-                                    studentController.paidDate);
-                              },
-                              icon: Icon(Icons.calendar_month))
-                        ],
-                      ),
-                      Container(
-                        height: 40,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(children: [
-                            for(var item in generateMonths())
-                              InkWell(
-                                onTap:(){
-                                  studentController.paidDate.value  = item;
-                                },
-                                child: Obx(()=>Container(
-
-                                  padding:EdgeInsets.all(8),
-                                  margin:EdgeInsets.only(right: 4),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.grey,width: 1),
-                                      color: studentController.paidDate.value  == item ? Colors.green:Colors.white,
-                                      borderRadius: BorderRadius.circular(12)
-                                  ),
-                                  child: Text(convertDateToMonthYear(item),style: TextStyle(
-                                    color: studentController.paidDate.value  == item ? Colors.white:Colors.black,
-
-                                  ),),
-                                )),
-                              )
-
-                          ],),),
-                      ),
-
-                      InkWell(
-                        onTap: () {
-                          if (_formKey.currentState!.validate() &&
-                              studentController
-                                  .paidDate.value.isNotEmpty) {
-                            studentController.addPayment(
-                                widget.id, studentController.paidDate.value);
-                          }
-                        },
-                        child: Obx(() => CustomButton(
-                            isLoading:
-                            studentController.isLoading.value,
-                            text: 'confirm'.tr.capitalizeFirst!)),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },),
+          _openPaymentSheet(
+            context: context,
+            isEdit: false,
+          );
+        },
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:linguista_ios/screens/admin/statistics/total_earning.dart';
 import '../../../controllers/admin/teachers_controller.dart';
 import '../../../controllers/groups/group_controller.dart';
 import '../../../controllers/students/student_controller.dart';
@@ -100,7 +101,9 @@ class Statistics extends StatelessWidget {
                 value: '— — —',
                 icon: Iconsax.money_4,
                 accent: const Color(0xFF2DBF7F),
-                onTap: null,
+                onTap: (){
+                  Get.to(TotalEarning());
+                },
               ),
               _StatItem(
                 title: 'Teachers',

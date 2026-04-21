@@ -302,7 +302,7 @@ class StudentController extends GetxController {
     });
   }
 
-  void addPayment(String documentId, String paidDate) async {
+  void addPayment(String documentId, String paidDate,String paymentType) async {
     isLoading.value = true;
     if (payment.text.isNotEmpty) {
       try {
@@ -318,27 +318,9 @@ class StudentController extends GetxController {
         // Get the current array field value
         List<dynamic> currentArray =
             List<dynamic>.from(currentMap['payments'] ?? []);
-        // Append the new item to the array
-
-        // find element by month and year
-        // int index = -1;
-        // for (int i = 0; i < currentArray.length; i++) {
-        //   if (currentArray[i]['paidMonth'] == month &&
-        //       currentArray[i]['paidYear'] == year) {
-        //     index = i;
-        //     break;
-        //   }
-        // }
-        // if (index == -1) {
-        //   currentArray.add({
-        //     'paidDate': paidDate,
-        //     'paidSum': payment.text,
-        //
-        //   });
-        // }
-        // else{
         currentArray.add({
           'paidDate': paidDate,
+          'paymentType':paymentType,
           'paidSum': payment.text.removeAllWhitespace,
           'paymentCommentary': paymentComment.text,
           'id': generateUniqueId()
@@ -374,6 +356,7 @@ class StudentController extends GetxController {
   void editPayment(
     String documentId,
     String uniqueId,
+      String paymentType
   ) async {
     isLoading.value = true;
     if (payment.text.isNotEmpty) {
@@ -403,6 +386,7 @@ class StudentController extends GetxController {
         if (index != -1) {
           currentArray[index] = {
             'paidDate': paidDate.value,
+            'paymentType':paymentType,
             'paidSum': payment.text.removeAllWhitespace,
             'paymentCommentary': paymentComment.text,
             'id': uniqueId
